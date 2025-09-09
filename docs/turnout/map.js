@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21mZDE2anltMDRkbDJtcHM1Y2M0eTFjNCJ9.nmMGLA-zX7BqznSJ2po65g";
 
     // Define basemap parameters
-    const mapZoom = window.innerWidth < 400 ? 10.4 : 12;
+    const mapZoom = window.innerWidth < 400 ? 10.4 : 12.5;
     const mapY = window.innerWidth < 400 ? 37.746 : 37.746;
 
     var map = new mapboxgl.Map({
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
         style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
         zoom: mapZoom,
         center: [-122.488, mapY],
-        minZoom: 12
+        minZoom: 12.5
     });
 
     let currentPopup; // Variable to hold the current popup reference
