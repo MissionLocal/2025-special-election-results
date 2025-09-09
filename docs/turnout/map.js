@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const content = `
                 <div style="background-color: white; padding: 5px; border-radius: 2.5px; font-size: 12px; line-height: 1.2;">
                     <h3 class="popup-header" style="margin: 2px 0; font-size: 16px;">Precinct ${properties.precinct || 'N/A'}</h3>
-                    <p class="popup-text" style="margin: 2px 0;">${properties.registered_voters} voters, ${properties.turnout || 'N/A'}% turnout</p>
+                    <p class="popup-text" style="margin: 2px 0;">${properties.registered_voters} voters<br>${properties.turnout || 'N/A'}% turnout</p>
                 </div>
             `;
 
