@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add GeoJSON data source
         map.addSource('precincts', {
             'type': 'geojson',
-            'data': 'data/turnout.geojson' // Static data file
+            'data': 'turnout.geojson' // Static data file
         });
 
         // Add a layer to style precinct polygons based on yes_perc_bin
