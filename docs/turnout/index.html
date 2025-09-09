@@ -1,0 +1,51 @@
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>September special election turnout</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="cont"><p class="note">View the overall turnout by precinct:</p></div>
+    <div class="cont">
+        <div id='map'></div>
+    </div>
+
+    <!-- Legend Container -->
+    <div class="legend-container">
+        <!-- First Legend Box -->
+        <div id="legend" class="color-scale">
+            <div style="display: flex; align-items: center;">
+                <div style="background-color: #EAFBFA; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <!-- Very light blue -->
+                <div style="background-color: #D4F6F4; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <!-- Light blue -->
+                <div style="background-color: #BFF1EE; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <!-- Slightly darker light blue -->
+                <div style="background-color: #A9EDEA; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <!-- Darker light blue -->
+                <div style="background-color: #9DF4D9; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <div style="background-color: #65EAD0; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <div style="background-color: #0DD6C7; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <div style="background-color: #0DC1D3; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <div style="background-color: #00A4BF; width: 20px; height: 20px; opacity: 0.6;"></div>
+                <div style="background-color: #007DBC; width: 20px; height: 20px; opacity: 0.6;"></div>
+            </div>
+            <div class="legend-labels">
+                <span>0%</span>
+                <span>100%</span>
+            </div>
+        </div>
+    </div>
+    <script type='text/javascript' src="map.js"></script>
+    <script type="text/javascript" src="https://pym.nprapps.org/pym.v1.min.js"></script>
+
+</body>
+
+</html>
