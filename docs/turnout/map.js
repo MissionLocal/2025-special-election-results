@@ -7,13 +7,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Define basemap parameters
     const mapZoom = window.innerWidth < 400 ? 10.4 : 12;
-    const mapY = window.innerWidth < 400 ? 37.745 : 37.745;
+    const mapY = window.innerWidth < 400 ? 37.746 : 37.746;
 
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
         zoom: mapZoom,
-        center: [-122.480, mapY],
+        center: [-122.488, mapY],
         minZoom: 12
     });
 
