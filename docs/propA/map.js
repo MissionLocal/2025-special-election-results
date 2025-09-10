@@ -7,18 +7,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // define basemap
     if (window.innerWidth < 400) {
         var mapZoom = 10.4;
-        var mapY = 37.771;
+        var mapY = 37.750;
     } else {
-        var mapZoom = 11.1;
-        var mapY = 37.77;
+        var mapZoom = 12.5;
+        var mapY = 37.750;
     }
 
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
         zoom: mapZoom,
-        center: [-122.429, mapY],
-        minZoom: 10.4 // Set minimum zoom level
+        center: [-122.496, mapY],
+        minZoom: 12.5 // Set minimum zoom level
     });
 
     let currentPopup; // Variable to hold the current popup reference
