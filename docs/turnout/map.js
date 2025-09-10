@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Define basemap parameters
     const mapZoom = window.innerWidth < 400 ? 10.4 : 12.5;
-    const mapY = window.innerWidth < 400 ? 37.8 : 37.8;
+    const mapY = window.innerWidth < 400 ? 37.750 : 37.750;
 
     var map = new mapboxgl.Map({
         container: 'map',
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const content = `
                 <div style="background-color: white; padding: 5px; border-radius: 2.5px; font-size: 12px; line-height: 1.2;">
                     <h3 class="popup-header" style="margin: 2px 0; font-size: 16px;">Precinct ${properties.precinct || 'N/A'}</h3>
-                               <hr>
+        <hr>
                     <p class="popup-text" style="margin: 2px 0;">${properties.registered_voters} voters<br>${properties.turnout || 'N/A'}% turnout</p>
                 </div>
             `;
