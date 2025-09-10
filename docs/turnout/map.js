@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Define basemap parameters
     const mapZoom = window.innerWidth < 400 ? 10.4 : 12.5;
-    const mapY = window.innerWidth < 400 ? 37.750 : 37.750;
+    const mapY = window.innerWidth < 400 ? 37.8 : 37.8;
 
     var map = new mapboxgl.Map({
         container: 'map',
