@@ -106,7 +106,7 @@ body {
     border-radius: 5px; /* Rounded corners */
     border: 0px solid gray; /* Border for visibility */
     margin: 0 auto; /* Center the dropdown itself */
-    font-family: Barlow, sans-serif;
+    font-family: 'Barlow', sans-serif;
     width: 100vw;
     max-width: 600px;
     background-color: white; /* Match legend background */
@@ -120,14 +120,14 @@ body {
 .popup-header {
     margin: 2px 0; /* Reduce top and bottom margins */
     font-size: 16px; /* Adjust header font size */
-    font-family: Barlow, sans-serif;
+    font-family: 'Barlow', sans-serif;
 }
 
 .popup-text {
     margin: 2px 0; /* Reduce margins on text elements */
     font-size: 14px; /* Adjust text font size */
     line-height: 1.2; /* Adjust line height */
-    font-family: Barlow, sans-serif;
+    font-family: 'Barlow', sans-serif;
 
 }
 
