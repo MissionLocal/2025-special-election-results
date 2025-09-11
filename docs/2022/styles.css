@@ -48,7 +48,7 @@ body {
 }
 
 #legend-district4 {
-    display: block; /* Display only legend-district1 by default */
+    display: block !important; /* Display only legend-district1 by default */
 }
 
 .legend {
