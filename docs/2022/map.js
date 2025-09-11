@@ -101,13 +101,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 let content = `
                     <div style="background-color: white; padding: 5px; border-radius: 3px; font-size: 12px; line-height: 1.2;">
-                        <h3 style="margin: 2px 0; font-size: 16px;">Precinct ${properties.precinct || 'N/A'}</h3>
+                        <h3 style="margin: 2px 0; font-size: 16px;  font-family: 'Barlow';">Precinct ${properties.precinct || 'N/A'}</h3>
                         <hr style="margin: 5px 0;">
                 `;
 
                 candidates.forEach(c => {
                     content += `
-                        <p style="margin: 2px 0;">
+                        <p style="margin: 2px 0; font-family: 'Barlow';>
                             ${winner.key === c.key ? `<strong>${c.name}</strong>` : c.name}:
                             ${winner.key === c.key ? `<strong>${c.percent}%</strong>` : c.percent + '%'}
                             (${winner.key === c.key ? `<strong>${c.votes}</strong>` : c.votes})
