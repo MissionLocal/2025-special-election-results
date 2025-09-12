@@ -125,7 +125,7 @@ body {
 
 .popup-text {
     margin: 2px 0; /* Reduce margins on text elements */
-    font-size: 14px; /* Adjust text font size */
+    font-size: 16px; /* Adjust text font size */
     line-height: 1.2; /* Adjust line height */
     font-family: 'Barlow', sans-serif;
 
