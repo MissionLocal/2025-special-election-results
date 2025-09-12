@@ -41,6 +41,7 @@ body {
     justify-content: center;
     gap: 20px; /* Space between the two legend boxes */
     margin: 10px; /* Space between the map and the legends */
+    padding-bottom: 10px;
 }
 
 /* Mobile Styles */
