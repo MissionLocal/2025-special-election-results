@@ -2,8 +2,8 @@ name: Update Charts
 
 on:
   schedule:
-    # Runs daily at 6:05pm PST → 02:05 UTC
-    - cron: "5 2 * * *"
+    # Runs daily at 6:15 p.m. PDT → 01:15 UTC
+    - cron: "15 1 * * *"
   workflow_dispatch:  # optional manual trigger
 
 jobs:
