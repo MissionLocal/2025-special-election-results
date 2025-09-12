@@ -107,13 +107,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 candidates.forEach(c => {
                     content += `
-                        <p style="margin: 2px 0; font-family: 'Barlow';>
+                        <p class="popup-text">
                             ${winner.key === c.key ? `<strong>${c.name}</strong>` : c.name}:
                             ${winner.key === c.key ? `<strong>${c.percent}%</strong>` : c.percent + '%'}
                             (${winner.key === c.key ? `<strong>${c.votes}</strong>` : c.votes})
                         </p>
                     `;
                 });
+                
 
                 content += `</div>`;
 
