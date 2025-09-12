@@ -1,0 +1,37 @@
+name: Update Charts
+
+on:
+  schedule:
+    # Runs daily at 6:05pm PST → 02:05 UTC
+    - cron: "15 1 * * *"
+  workflow_dispatch:  # optional manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas geopandas xlrd requests matplotlib openpyxl seaborn
+
+      - name: Run notebook
+        run: |
+          jupyter nbconvert --to notebook --execute read_results.ipynb --output read_results.ipynb
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ read_results.ipynb
+          git commit -m "Auto-update charts [skip ci]" || echo "No changes to commit"
+          git push
