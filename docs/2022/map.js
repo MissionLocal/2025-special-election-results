@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'gordon_mar', '#f2d579',
                     '#CECECE' // default gray if no match
                 ],
-                'fill-opacity': 0.6
+                'fill-opacity': 1
             }
         });
 
