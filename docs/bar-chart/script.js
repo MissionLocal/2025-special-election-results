@@ -44,9 +44,10 @@ data.forEach((d) => {
         .attr("y", (d, i) => i * 30 + 19) // Moved down by 2px
         .text((d, i) => i === 0 ? "Yes" : "No")
         .attr("fill", "black")
-        .attr("font-size", "12px")
+        .attr("font-size", "14px")
         .attr("text-anchor", "start")
-        .attr("class", "label");
+        .attr("class", "label")
+        .attr("font-weight", "bold");
 
     // Create bars with consistent widths
     svg.selectAll(".bar")
@@ -80,18 +81,19 @@ data.forEach((d) => {
             .attr("class", "threshold-label");
     }
 
-    // Display values on the right side of each bar
+    const formatPct = d => (Number.isInteger(d) ? d.toFixed(0) : d.toFixed(1)) + "%";
+
     svg.selectAll(".value")
-        .data([parseFloat(d.yes_p.toFixed(1)), parseFloat(d.no_p.toFixed(1))])
-        .enter()
-        .append("text")
-        .attr("x", d => 30 + xScale(d) + 16)
-        .attr("y", (d, i) => i * 30 + 19) // Moved down by 2px
-        .text(d => d)
-        .attr("fill", "black")
-        .attr("font-size", "12px")
-        .attr("text-anchor", "start")
-        .attr("class", "value");
+      .data([ +d.yes_p.toFixed(1), +d.no_p.toFixed(1) ])   // + coerces to Number
+      .join("text")                                         // handles enter/update/exit
+      .attr("class", "value")
+      .attr("x", d => 30 + xScale(d) + 16)
+      .attr("y", (d, i) => i * 32 + 19)
+      .attr("fill", "black")
+      .attr("font-size", "14px")
+      .attr("text-anchor", "start")
+      .text(formatPct);
+    
 });
 
         // Resize the iframe once charts are drawn
