@@ -22,11 +22,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy pandas geopandas xlrd requests matplotlib openpyxl seaborn
+          pip install notebook nbconvert numpy pandas geopandas xlrd requests matplotlib openpyxl seaborn
+        
 
       - name: Run notebook
         run: |
-          jupyter -m nbconvert --to notebook --execute read_results.ipynb --output read_results.ipynb
+          python -m nbconvert --to notebook --execute read_results.ipynb --output read_results.ipynb
+        
 
       - name: Commit changes
         run: |
