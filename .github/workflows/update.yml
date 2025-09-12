@@ -26,7 +26,7 @@ jobs:
 
       - name: Run notebook
         run: |
-          jupyter nbconvert --to notebook --execute read_results.ipynb --output read_results.ipynb
+          jupyter -m nbconvert --to notebook --execute read_results.ipynb --output read_results.ipynb
 
       - name: Commit changes
         run: |
