@@ -82,6 +82,11 @@ body {
     display: none;
 }
 
+#last-updated {
+    display: block;
+    margin-top: 40px; /* push it down so it doesn't overlap the legend */
+}
+
 .legend-static {
     background-color: white;
     border-radius: 4px;
