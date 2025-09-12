@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize the Pym.js child
     var pymChild = new pym.Child();
     // define access token
-    mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21kODJzdWZnMHFqMzJtb2tqc20wOXY2NyJ9.oeZTOKB57oX-95RuV-bkaQ";
+    mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21mZDE2anltMDRkbDJtcHM1Y2M0eTFjNCJ9.nmMGLA-zX7BqznSJ2po65g";
 
     // define basemap
     // if (window.innerWidth < 400) {

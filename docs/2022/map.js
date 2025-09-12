@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize the Pym.js child
     var pymChild = new pym.Child();
-    mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21kODJzdWZnMHFqMzJtb2tqc20wOXY2NyJ9.oeZTOKB57oX-95RuV-bkaQ";
+    mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21mZDE2anltMDRkbDJtcHM1Y2M0eTFjNCJ9.nmMGLA-zX7BqznSJ2po65g";
 
     // Initialize the map centered on District 4
     var map = new mapboxgl.Map({
@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 'fill-color': [
                     'match',
                     ['get', 'winner'],
-                    'joel_engardio', '#57a4ea',
-                    'gordon_mar', '#46c134',
+                    'joel_engardio', '#94e4d6',
+                    'gordon_mar', '#f2d579',
                     '#CECECE' // default gray if no match
                 ],
                 'fill-opacity': 0.6
