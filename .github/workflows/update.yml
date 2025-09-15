@@ -42,15 +42,16 @@ jobs:
             --output read_results.ipynb \
             --ExecutePreprocessor.allow_errors=True
 
-      # 6️⃣ Insert last updated date (only if this is "Update Charts")
       - name: Insert last updated date
         if: ${{ github.workflow == 'Update Charts' }}
         run: |
-          DATE=$(date +"%B %d, %Y %I:%M %p PDT")
-          for file in docs/*/index.html; do
-            sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
+          DATE=$(TZ="America/Los_Angeles" date +"%B %d, %Y %I:%M %p %Z")
+          for file in docs/index.html docs/*/index.html; do
+            if [ -f "$file" ]; then
+              sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
+            fi
           done
-
+    
       # 7️⃣ Commit updated files
       - name: Commit changes
         run: |
