@@ -42,8 +42,9 @@ jobs:
             --output read_results.ipynb \
             --ExecutePreprocessor.allow_errors=True
 
-      # 6️⃣ Insert last updated date
+      # 6️⃣ Insert last updated date (only if this is "Update Charts")
       - name: Insert last updated date
+        if: ${{ github.workflow == 'Update Charts' }}
         run: |
           DATE=$(date +"%B %d, %Y %I:%M %p PDT")
           for file in docs/*/index.html; do
