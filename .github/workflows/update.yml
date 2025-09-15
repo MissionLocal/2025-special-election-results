@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install notebook nbconvert pandas numpy geopandas xlrd requests matplotlib openpyxl seaborn
 
-      # 4️⃣ Ensure folders exist (adjust if your notebook writes elsewhere)
+      # 4️⃣ Ensure folders exist
       - name: Create folders
         run: |
           mkdir -p data
@@ -42,7 +42,15 @@ jobs:
             --output read_results.ipynb \
             --ExecutePreprocessor.allow_errors=True
 
-      # 6️⃣ Commit updated files
+      # 6️⃣ Insert last updated date
+      - name: Insert last updated date
+        run: |
+          DATE=$(date +"%B %d, %Y %I:%M %p PDT")
+          for file in docs/*/index.html; do
+            sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
+          done
+
+      # 7️⃣ Commit updated files
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
@@ -50,12 +58,3 @@ jobs:
           git add docs/ read_results.ipynb
           git commit -m "Auto-update charts [skip ci]" || echo "No changes to commit"
           git push
-
-      - name: Insert last updated date
-        run: |
-          DATE=$(date +"%B %d, %Y %I:%M %p PDT")
-          for file in docs/*/index.html; do
-            sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
-          done
-        
-        
