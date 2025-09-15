@@ -25,8 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
             'type': 'geojson',
             'data': 'turnout.geojson' // Static data file
         });
-
-        // Add a layer to style precinct polygons based on yes_perc_bin
         map.addLayer({
             'id': 'precincts-layer',
             'type': 'fill',
@@ -35,26 +33,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 'fill-color': [
                     'match',
                     ['get', 'yes_perc'],
-                    // Values below 50% with light blue shades
-                    'Less than 25%', '#EAFBFA',
-                    '25-30%', '#D4F6F4',
-                    '30-35%', '#BFF1EE',
-                    '35-40%', '#A9EDEA',
-                    '40-45%', '#9DF4D9',
-                    '45-50%', '#9DF4D9',
-                    // Colors for 50% and above
-                    '50-55%', '#9DF4D9',
-                    '55-60%', '#65EAD0',
-                    '60-65%', '#0DD6C7',
-                    '65-70%', '#0DC1D3',
-                    '70-75%', '#00A4BF',
-                    '75% and more', '#007DBC',
+                    // Low turnout
+                    'Less than 25%', '#9DF4D9',
+                    '25-30%', '#65EAD0',
+                    '30-35%', '#0DD6C7',
+                    '35-40%', '#0DC1D3',
+                    '40-45%', '#00A4BF',
+                    '45-50%', '#007DBC',
+                    // Higher turnout
+                    '50-55%', '#005A8C',
+                    '55-60%', '#003F5C',
+                    '60-65%', '#00233B',
+                    '65-70%', '#001F2A',
+                    '70-75%', '#001622',
+                    '75% and more', '#000F19',
                     '#CECECE' // Default color for any values not covered
-                ]
-                ,
-                'fill-opacity': 0.6
+                ],
+                'fill-opacity': 0.8
             }
         });
+        
+        
+        
+        
 
         // Add a base outline for the precincts
         map.addLayer({
