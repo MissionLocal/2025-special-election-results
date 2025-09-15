@@ -40,6 +40,12 @@ body {
 
 }
 
+#last-updated {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+
 .legend-labels {
     display: flex;
     flex-wrap: wrap;
@@ -58,7 +64,7 @@ body {
     justify-content: center;
     gap: 20px; /* Space between the two legend boxes */
     margin: 10px; /* Space between the map and the legends */
-    padding-bottom: 10px;
+    /* padding-bottom: 10px; */
 }
 
 /* Mobile Styles */
@@ -85,7 +91,7 @@ body {
 
 #last-updated {
     display: block;
-    margin-top: 40px; /* push it down so it doesn't overlap the legend */
+    margin-top: 20px; /* push it down so it doesn't overlap the legend */
 }
 
 .legend-static {
