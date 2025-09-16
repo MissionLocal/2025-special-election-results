@@ -147,33 +147,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let legend1El, legend2El;
   function injectLegends() {
-    const map1Container = document.getElementById('map1').parentElement;
-    const map2Container = document.getElementById('map2').parentElement;
+    const map1Wrap = document.getElementById('map1').parentElement; // .map-wrap
+    const map2Wrap = document.getElementById('map2').parentElement; // .map-wrap
 
+    // ensure overlay columns
+    let stack1 = map1Wrap.querySelector('.overlay-stack');
+    if (!stack1) {
+      stack1 = document.createElement('div');
+      stack1.className = 'overlay-stack';
+      map1Wrap.appendChild(stack1);
+    }
+    let stack2 = map2Wrap.querySelector('.overlay-stack');
+    if (!stack2) {
+      stack2 = document.createElement('div');
+      stack2.className = 'overlay-stack';
+      map2Wrap.appendChild(stack2);
+    }
+
+    // move titles (if present) into the stacks
+    const map1Title = document.getElementById('map1title'); // if you have one
+    if (map1Title && map1Title.parentElement !== stack1) stack1.appendChild(map1Title);
+    if (map2Title && map2Title.parentElement !== stack2) stack2.appendChild(map2Title);
+
+    // create/attach legends under the titles
     legend1El = document.getElementById('legend1');
     if (!legend1El) {
       legend1El = document.createElement('div');
       legend1El.className = 'legend';
       legend1El.id = 'legend1';
-      map1Container.appendChild(legend1El);
     }
     legend1El.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
+    if (legend1El.parentElement !== stack1) stack1.appendChild(legend1El);
 
     legend2El = document.getElementById('legend2');
     if (!legend2El) {
       legend2El = document.createElement('div');
       legend2El.className = 'legend';
       legend2El.id = 'legend2';
-      map2Container.appendChild(legend2El);
     }
     legend2El.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
+    if (legend2El.parentElement !== stack2) stack2.appendChild(legend2El);
   }
-  function updateMap2Legend(mode) {
-    if (!legend2El) return;
-    legend2El.innerHTML = (mode === 'propK')
-      ? legendSquaresHTML('Yes vote %', 'No', 'Yes')
-      : legendSquaresHTML('Engardio %', '0%', '100%');
-  }
+
 
   // Sync camera
   function sync(a, b) {
@@ -294,14 +309,14 @@ document.addEventListener('DOMContentLoaded', () => {
         lastSelectedPrecinct = getPrecinct(e.features[0].properties || '');
         updateBoxesFromPrecinct(lastSelectedPrecinct);
         setHoverPrecinct(lastSelectedPrecinct);
-        showInfoBoxes();                 
+        showInfoBoxes();
       });
       map2.on('click', 'map2-fill', e => {
         if (!e.features.length) return;
         lastSelectedPrecinct = getPrecinct(e.features[0].properties || '');
         updateBoxesFromPrecinct(lastSelectedPrecinct);
         setHoverPrecinct(lastSelectedPrecinct);
-        showInfoBoxes();                 
+        showInfoBoxes();
       });
 
 
@@ -312,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If you want them totally empty (disappear):
         infoBox1.innerHTML = '';
         infoBox2.innerHTML = '';
-        hideInfoBoxes();                 
+        hideInfoBoxes();
         // If you prefer the original hints instead, swap the two lines above for:
         // infoBox1.innerHTML = '<div>Click a precinct.</div>';
         // const mode = modeSelect?.value || 'propK';
