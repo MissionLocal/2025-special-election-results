@@ -1,90 +1,42 @@
-body {
-    margin: 0;
-    padding: 0;
-    padding-bottom: 20px;
+/* base */
+body { margin:0; padding:0 0 20px 0; font-family:'Barlow',sans-serif; }
+
+/* layout */
+.cont { display:flex; justify-content:center; align-items:center; }
+.map-container { position:relative; width:100vw; max-width:400px; margin:10px auto; }
+.map { width:100vw; max-width:400px; height:500px; box-shadow:0 4px 8px rgba(0,0,0,.1); }
+
+/* hide any old static legend block if left in the HTML */
+.legend-container { display:none !important; }
+
+/* legend (top-left) */
+.legend{
+  position:absolute; top:14px; left:14px; z-index:2;
+  background:rgba(255,255,255,.95); border-radius:2px;
+  box-shadow:0 1px 2px rgba(0,0,0,.12);
+  padding:6px 8px; font-size:11.5px; line-height:1.1;
+  display:inline-block; max-width:240px; pointer-events:none;
 }
+.legend .legend-title{color:#333; margin-bottom:4px; }
+.legend .legend-row{ display:flex; gap:3px; }
+.legend .legend-swatch{ display:inline-block; width:10px; height:10px; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.1); }
+.legend .legend-ends{ display:flex; justify-content:space-between; margin-top:4px; width:100%; color:#222; }
 
-#map {
-    width: 100vw;
-    max-width: 400px;
-    height: 500px;
-    margin: 10px 10px 10px 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
-
+/* info card (bottom centered) */
+.info-box{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:14px; z-index:2;
+  width:calc(100% - 12px); max-width:460px; box-sizing:border-box;
+  padding:8px 10px; background:rgba(255,255,255,.98);
+  border-radius:2px; box-shadow:0 2px 4px rgba(0,0,0,.1);
+  font-size:13px; line-height:1.35; max-height:40%; overflow-y:auto;
 }
+.info-box .info-stats{ white-space:nowrap; } /* keep the one-liner intact */
 
-.cont {
-    display: flex;
-    justify-content: center; /* Center the container horizontally */
-    align-items: center; /* Center the container vertically, if needed */
-}
-
-/* Container layout */
-.dropdownContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 10px 10px 10px 10px;
-
-}
-
-.legend-labels {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 5px;
-    font-family: Barlow, sans-serif;
-
-}
-.legend-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Space between the two legend boxes */
-    margin: 10px; /* Space between the map and the legends */
-    padding-bottom: 10px;
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-    .legend-container {
-        flex-direction: column; /* Stack boxes on mobile */
-        align-items: center; /* Center boxes horizontally */
-    }
-}
-
-.color-scale { 
-    max-height: 50px;
-}
-
-#legend {
-    background-color: white;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: fit-content;
-    font-family: Barlow, sans-serif;
-}
-
-.note {
-    font-family: Barlow, sans-serif;
-}
-
-.popup-header {
-    margin: 2px 0; /* Reduce top and bottom margins */
-    font-size: 16px; /* Adjust header font size */
-    font-family: Barlow, sans-serif;
-}
-
-.popup-text {
-    margin: 2px 0; /* Reduce margins on text elements */
-    font-size: 16px; /* Adjust text font size */
-    line-height: 1.2; /* Adjust line height */
-    font-family: Barlow, sans-serif;
-
-}
-
-.mapboxgl-popup-content {
-    background-color: rgba(255, 255, 255); /* 0.8 for 80% opacity */
-    border-radius: 5px; /* Optional: adds rounded corners */
-    color: #333; /* Text color to ensure readability */
+/* mobile: keep desktop sizing for this single map */
+@media (max-width:768px){
+  .map-container{ max-width:400px; }
+  .map{ height:500px; }
+  .legend{ top:14px; left:14px; }
+  .info-box{ width:calc(100% - 12px); max-width:460px; }
 }

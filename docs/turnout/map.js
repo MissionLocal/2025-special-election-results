@@ -1,125 +1,122 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize the Pym.js child
-    var pymChild = new pym.Child();
-
-    // Define access token
+document.addEventListener('DOMContentLoaded', async () => {
+    const pymChild = new pym.Child();
     mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21mZDE2anltMDRkbDJtcHM1Y2M0eTFjNCJ9.nmMGLA-zX7BqznSJ2po65g";
-
-    // Define basemap parameters
-    // const mapZoom = window.innerWidth < 400 ? 10.4 : 12.5;
-    // const mapY = window.innerWidth < 400 ? 37.750 : 37.750;
-
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
-        zoom: 12.5,
-        center: [-122.496, 37.750], // Updated default center
+  
+    // DOM
+    const infoBox  = document.getElementById('info-box');
+    const legendEl = document.getElementById('legend');
+  
+    // Hide info box on load ✅
+    if (infoBox) infoBox.style.display = 'none';
+  
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
+      center: [-122.496, 37.750],
+      zoom: 12.2
     });
-
-
-    let currentPopup; // Variable to hold the current popup reference
-
+  
+    const key = v => (v == null ? '' : String(v).trim());
+    const getPrecinct = o => key(o?.precinct ?? o?.Precinct ?? o?.PCT ?? o?.pct);
+    const fmtInt = x => Number.isFinite(Number(x)) ? Number(x).toLocaleString() : 'N/A';
+    const fmtPct = x => { const n = Number(x); return Number.isFinite(n) ? n.toFixed(1) + '%' : 'N/A'; };
+  
+    function tplInfoOneLine(p = {}) {
+      const turnoutTxt = (p?.turnout != null) ? fmtPct(p.turnout) : 'N/A';
+      const votersTxt  = p?.registered_voters ? `${fmtInt(p.registered_voters)} voters` : '';
+      const castTxt    = p?.votes_cast ? ` • Votes cast: ${fmtInt(p.votes_cast)}` : '';
+      return `
+        <div><strong>Precinct ${key(p?.precinct) || 'N/A'}</strong></div>
+        <div class="info-stats">Turnout: ${turnoutTxt}${votersTxt ? ` • ${votersTxt}` : ''}</div>
+      `;
+    }
+  
+    const turnoutPaint = {
+      'fill-color': [
+        'match',['get','yes_perc'],
+        'Less than 25%','#9DF4D9','25-30%','#65EAD0','30-35%','#0DD6C7','35-40%','#0DC1D3',
+        '40-45%','#00A4BF','45-50%','#007DBC','50-55%','#005A8C','55-60%','#003F5C',
+        '60-65%','#00233B','65-70%','#001F2A','70-75%','#001622','75% and more','#000F19',
+        '#CECECE'
+      ],
+      'fill-opacity': 0.6
+    };
+  
+    const SWATCH_ALPHA = 0.6;
+    const LEGEND_COLORS_RGB = [
+      [157,244,217],[101,234,208],[13,214,199],[13,193,211],[0,164,191],[0,125,188],
+      [0,90,140],[0,63,92],[0,35,59],[0,31,42],[0,22,34],[0,15,25]
+    ];
+    const legendSquaresHTML = (title, leftLabel, rightLabel) => `
+      <div class="legend-title">${title}</div>
+      <div class="legend-row">
+        ${LEGEND_COLORS_RGB.map(([r,g,b]) => `<span class="legend-swatch" style="background:rgba(${r},${g},${b},${SWATCH_ALPHA})"></span>`).join('')}
+      </div>
+      <div class="legend-ends"><span>${leftLabel}</span><span>${rightLabel}</span></div>
+    `;
+  
+    const byPrecinct = Object.create(null);
+    function indexGeojson(gj) {
+      for (const k in byPrecinct) delete byPrecinct[k];
+      for (const f of (gj.features || [])) {
+        const k = getPrecinct(f.properties || {});
+        if (k) byPrecinct[k] = f.properties;
+      }
+    }
+  
+    const dataUrl = 'turnout.geojson';
+    const gj = await fetch(dataUrl).then(r => r.json());
+    indexGeojson(gj);
+  
     map.on('load', () => {
-        // Add GeoJSON data source
-        map.addSource('precincts', {
-            'type': 'geojson',
-            'data': 'turnout.geojson' // Static data file
-        });
-        map.addLayer({
-            'id': 'precincts-layer',
-            'type': 'fill',
-            'source': 'precincts',
-            'paint': {
-                'fill-color': [
-                    'match',
-                    ['get', 'yes_perc'],
-                    // Low turnout
-                    'Less than 25%', '#9DF4D9',
-                    '25-30%', '#65EAD0',
-                    '30-35%', '#0DD6C7',
-                    '35-40%', '#0DC1D3',
-                    '40-45%', '#00A4BF',
-                    '45-50%', '#007DBC',
-                    // Higher turnout
-                    '50-55%', '#005A8C',
-                    '55-60%', '#003F5C',
-                    '60-65%', '#00233B',
-                    '65-70%', '#001F2A',
-                    '70-75%', '#001622',
-                    '75% and more', '#000F19',
-                    '#CECECE' // Default color for any values not covered
-                ],
-                'fill-opacity': 0.8
-            }
-        });
-        
-        // Add a base outline for the precincts
-        map.addLayer({
-            'id': 'precincts-outline',
-            'type': 'line',
-            'source': 'precincts',
-            'paint': {
-                'line-color': '#ffffff',
-                'line-width': 0.5
-            }
-        });
-
-        // Add hover outline layer for highlighted polygons
-        map.addLayer({
-            'id': 'precincts-hover-outline',
-            'type': 'line',
-            'source': 'precincts',
-            'paint': {
-                'line-color': '#ffffff',
-                'line-width': 2.5,
-            },
-            'filter': ['==', ['get', 'precinct'], ''] // Initially hidden
-        });
-
-        // Add hover event listeners
-        map.on('mousemove', 'precincts-layer', (e) => {
-            if (e.features.length > 0) {
-                map.getCanvas().style.cursor = 'pointer';
-                const featurePrecinct = e.features[0].properties.precinct;
-                map.setFilter('precincts-hover-outline', ['==', ['get', 'precinct'], featurePrecinct]);
-            }
-        });
-
-        map.on('mouseleave', 'precincts-layer', () => {
-            map.getCanvas().style.cursor = '';
-            map.setFilter('precincts-hover-outline', ['==', ['get', 'precinct'], '']);
-        });
-
-        // Once the charts are drawn, call pymChild.sendHeight() to resize the iframe
+      map.addSource('precincts', { type:'geojson', data: gj });
+      map.addLayer({ id:'turnout-fill',   type:'fill', source:'precincts', paint: turnoutPaint });
+      map.addLayer({ id:'turnout-outline',type:'line', source:'precincts', paint:{ 'line-color':'#fff','line-width':0.5 }});
+      map.addLayer({ id:'turnout-hover',  type:'line', source:'precincts', paint:{ 'line-color':'#fff','line-width':2.5 }, filter:['==',['get','precinct'],''] });
+  
+      // Hover
+      map.on('mousemove','turnout-fill', e => {
+        if (!e.features?.length) return;
+        const k = getPrecinct(e.features[0].properties || {});
+        map.setFilter('turnout-hover',['==',['get','precinct'],k]);
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave','turnout-fill', () => {
+        map.setFilter('turnout-hover',['==',['get','precinct'],'']);
+        map.getCanvas().style.cursor = '';
+      });
+  
+      // Click on precinct → show card ✅
+      map.on('click','turnout-fill', e => {
+        if (!e.features?.length) return;
+        const k = getPrecinct(e.features[0].properties || {});
+        const props = byPrecinct[k] || e.features[0].properties || {};
+        infoBox.style.display = 'block';                    // show
+        infoBox.innerHTML = tplInfoOneLine(props);
+        map.setFilter('turnout-hover',['==',['get','precinct'],k]);
         pymChild.sendHeight();
+      });
+  
+      // Click anywhere else on the map → hide card ✅
+      map.on('click', e => {
+        const feats = map.queryRenderedFeatures(e.point, { layers:['turnout-fill'] });
+        if (feats.length) return;                           // (click was on a precinct)
+        infoBox.style.display = 'none';                     // hide
+        map.setFilter('turnout-hover',['==',['get','precinct'],'']);
+        pymChild.sendHeight();
+      });
+  
+      legendEl.innerHTML = legendSquaresHTML('Turnout','0%','100%');
+  
+      try {
+        if (map.getLayer('road-label-navigation')) map.moveLayer('road-label-navigation');
+        if (map.getLayer('settlement-subdivision-label')) map.moveLayer('settlement-subdivision-label');
+      } catch {}
     });
-
-    map.on('click', 'precincts-layer', function (e) {
-        if (e.features.length > 0) {
-            const properties = e.features[0].properties;
-            const yesPerc = properties.yes_perc ? Number(properties.yes_perc) : 0;
-            const noPerc = 100 - yesPerc;
-
-            const content = `
-                <div style="background-color: white; padding: 5px; border-radius: 2.5px; font-size: 12px; line-height: 1.2;">
-                    <h3 class="popup-header" style="margin: 2px 0; font-size: 16px;">Precinct ${properties.precinct || 'N/A'}</h3>
-        <hr>
-                    <p class="popup-text" style="margin: 2px 0;">${properties.registered_voters} voters<br>${properties.turnout || 'N/A'}% turnout</p>
-                </div>
-            `;
-
-            if (currentPopup) currentPopup.remove();
-
-            currentPopup = new mapboxgl.Popup()
-                .setLngLat(e.lngLat)
-                .setHTML(content)
-                .addTo(map);
-        }
+  
+    window.addEventListener('resize', () => {
+      map.resize();
+      pymChild.sendHeight();
     });
-
-    map.on('load', function () {
-        map.moveLayer('road-label-navigation');
-        map.moveLayer('settlement-subdivision-label');
-    });
-});
-
+  });
+  
