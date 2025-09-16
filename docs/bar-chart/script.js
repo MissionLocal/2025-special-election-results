@@ -61,14 +61,14 @@ data.forEach((d) => {
         .attr("fill", (d, i) => i === 0 ? "#8ad6ce" : "#f36e57");
 
     // Add the threshold line based on the consistent xScale
-    svg.append("line")
-        .attr("x1", 30 + xScale(d.threshold))
-        .attr("x2", 30 + xScale(d.threshold))
-        .attr("y1", 0) // Adjusted to start slightly above the bars
-        .attr("y2", 29) // Adjusted to extend to below the bars
-        .attr("stroke", "black")
-        .attr("stroke-width", 1)
-        .attr("class", "threshold-line");
+    // svg.append("line")
+    //     .attr("x1", 30 + xScale(d.threshold))
+    //     .attr("x2", 30 + xScale(d.threshold))
+    //     .attr("y1", 0) // Adjusted to start slightly above the bars
+    //     .attr("y2", 29) // Adjusted to extend to below the bars
+    //     .attr("stroke", "black")
+    //     .attr("stroke-width", 1)
+    //     .attr("class", "threshold-line");
 
     // Label for threshold (only for Proposition A as before)
     if (d.proposition === "A") {
