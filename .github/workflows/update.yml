@@ -4,7 +4,7 @@ on:
   schedule:
     # Runs daily at 6:15 p.m. PDT → 01:15 UTC
     - cron: "15 1 * * *"
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -42,10 +42,8 @@ jobs:
             --output read_results.ipynb \
             --ExecutePreprocessor.allow_errors=True
 
-      # 6️⃣ Insert last updated date (only if this is "Update Charts")
-# 6️⃣ Insert/Update "last updated" date (idempotent)
+      # 6️⃣ Insert/Update "last updated" date (idempotent, robust)
       - name: Insert/Update last updated date
-        shell: bash
         env:
           TZ: America/Los_Angeles
         run: |
@@ -53,32 +51,27 @@ jobs:
           DATE="$(date +"%B %d, %Y %I:%M %p %Z")"
           echo "Using DATE='$DATE'"
 
-          shopt -s nullglob
-          files=(docs/index.html docs/*/index.html)
+          # Find all docs/**/index.html
+          mapfile -t files < <(find docs -type f -name "index.html")
 
-          any=0
+          if ((${#files[@]}==0)); then
+            echo "⚠️ No HTML files found under docs/"
+            exit 0
+          fi
+
           for file in "${files[@]}"; do
-            [ -f "$file" ] || continue
-
-            if grep -q 'id="update-date"' "$file"; then
-              # Update inner text of the existing span
-              sed -i -E 's|(id="update-date"[^>]*>)[^<]*(</span>)|\1'"$DATE"'\2|g' "$file"
-              echo "✅ Updated <span id=\"update-date\"> in: $file"
-              any=1
+            # If there's an update-date span, replace its inner text (handles ' or " and newlines)
+            if grep -Eq 'id[[:space:]]*=[[:space:]]*["'"'"']update-date["'"'"']' "$file"; then
+              perl -0777 -pe 's{(<span\b[^>]*\bid\s*=\s*["'\''"]update-date["'\''"][^>]*>).*?(</span>)}{$1$ENV{DATE}$2}gsi' -i "$file"
+              echo "✅ Updated update-date span in: $file"
+            # Otherwise, replace a literal DATE_PLACEHOLDER if present
             elif grep -q 'DATE_PLACEHOLDER' "$file"; then
-              # One-time bootstrap: replace the placeholder text
-              sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
+              perl -0777 -pe 's{DATE_PLACEHOLDER}{$ENV{DATE}}g' -i "$file"
               echo "✅ Replaced DATE_PLACEHOLDER in: $file"
-              any=1
             else
               echo "↷ Skipped (no update-date span or placeholder): $file"
             fi
           done
-
-          if [ "$any" -eq 0 ]; then
-            echo "⚠️ No files updated. Ensure your HTML has either <span id=\"update-date\">…</span> or DATE_PLACEHOLDER."
-          fi
-
 
       # 7️⃣ Commit updated files
       - name: Commit changes
