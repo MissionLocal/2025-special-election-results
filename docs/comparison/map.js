@@ -9,18 +9,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const modeSelect = document.getElementById('map2Mode');
   const map2Title = document.getElementById('map2title');
 
+  // --- View presets for desktop vs mobile ---
+  const VIEW = {
+    desktop: { center: [-122.496, 37.750], zoom: 12.5 },  // ← tweak as you like
+    mobile: { center: [-122.488, 37.745], zoom: 11.9 }   // ← tweak as you like
+  };
+  const MEDIA = window.matchMedia('(max-width: 640px)');   // mobile breakpoint
+  let viewMode = MEDIA.matches ? 'mobile' : 'desktop';
+  const initialView = VIEW[viewMode];
+
   // Maps
   const map1 = new mapboxgl.Map({
     container: 'map1',
     style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
-    center: [-122.496, 37.750],
-    zoom: 12.5
+    center: initialView.center,
+    zoom: initialView.zoom
   });
   const map2 = new mapboxgl.Map({
     container: 'map2',
     style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
-    center: [-122.496, 37.750],
-    zoom: 12.5
+    center: initialView.center,
+    zoom: initialView.zoom
   });
 
   // Helpers
@@ -366,6 +375,22 @@ document.addEventListener('DOMContentLoaded', () => {
       sync(map1, map2);
       const initialMode = modeSelect?.value || 'propK';
       updateMap2Title(initialMode);
+
+      // When viewport crosses the breakpoint (e.g., rotate phone), update both maps.
+      // We jump only map1; the sync() you already have will move map2.
+      MEDIA.addEventListener('change', () => {
+        const newMode = MEDIA.matches ? 'mobile' : 'desktop';
+        if (newMode !== viewMode) {
+          viewMode = newMode;
+          const v = VIEW[viewMode];
+          map1.jumpTo({
+            center: v.center,
+            zoom: v.zoom,
+            bearing: map1.getBearing(), // keep current bearing/pitch
+            pitch: map1.getPitch()
+          });
+        }
+      });
 
       // Legends
       injectLegends();
