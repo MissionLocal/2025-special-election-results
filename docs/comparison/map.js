@@ -288,20 +288,47 @@ document.addEventListener('DOMContentLoaded', () => {
       map2.addSource('map2src', { type: 'geojson', data: propK });
       buildMap2Layers('propK');
 
+      // Dropdown: swap Map 2 between Prop K and 2022 supervisor
+      if (modeSelect) {
+        modeSelect.addEventListener('change', (e) => {
+          // treat anything not 'propK' as the supervisor map
+          const mode = (e.target.value === 'propK') ? 'propK' : 'd4_2022';
+          const data = (mode === 'propK') ? propK : d4;
+
+          // swap data and rebuild layers (also rebind hover)
+          map2.getSource('map2src').setData(data);
+          buildMap2Layers(mode);
+
+          // update title + legend
+          updateMap2Title(mode);
+          updateMap2Legend(mode);
+
+          // restore selection (if any), otherwise hide info boxes
+          if (lastSelectedPrecinct) {
+            updateBoxesFromPrecinct(lastSelectedPrecinct);
+            setHoverPrecinct(lastSelectedPrecinct);
+            showInfoBoxes();
+          } else {
+            hideInfoBoxes();
+          }
+        });
+      }
+
+
       // Click handlers (both maps) — remember selection, update boxes, keep highlight
       map1.on('click', 'propA-fill', e => {
         if (!e.features.length) return;
         lastSelectedPrecinct = getPrecinct(e.features[0].properties || '');
         updateBoxesFromPrecinct(lastSelectedPrecinct);
         setHoverPrecinct(lastSelectedPrecinct);
-        showInfoBoxes();                 
+        showInfoBoxes();
       });
       map2.on('click', 'map2-fill', e => {
         if (!e.features.length) return;
         lastSelectedPrecinct = getPrecinct(e.features[0].properties || '');
         updateBoxesFromPrecinct(lastSelectedPrecinct);
         setHoverPrecinct(lastSelectedPrecinct);
-        showInfoBoxes();                 
+        showInfoBoxes();
       });
 
 
@@ -312,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If you want them totally empty (disappear):
         infoBox1.innerHTML = '';
         infoBox2.innerHTML = '';
-        hideInfoBoxes();                 
+        hideInfoBoxes();
         // If you prefer the original hints instead, swap the two lines above for:
         // infoBox1.innerHTML = '<div>Click a precinct.</div>';
         // const mode = modeSelect?.value || 'propK';
