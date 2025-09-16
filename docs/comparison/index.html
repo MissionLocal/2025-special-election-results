@@ -183,29 +183,6 @@ body {
   }
 }
 
-/* each map's outer wrapper should already exist */
-.map-wrap { position: relative; }
-
-/* overlay stack anchored top-left of each map */
-.overlay-stack {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;              /* space between title and legend */
-}
-
-/* ensure legend flows inside the stack (not absolutely positioned) */
-.overlay-stack .legend { position: static !important; margin: 0; }
-
-/* (optional) tiny tweaks on small screens */
-@media (max-width: 640px) {
-  .overlay-stack { top: 10px; left: 10px; gap: 6px; }
-}
-
-
     </style>
 </head>
 
