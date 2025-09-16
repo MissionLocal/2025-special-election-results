@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container: 'map',
       style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
       center: [-122.496, 37.750],
-      zoom: 12.5
+      zoom: 12
     });
   
     // Helpers
