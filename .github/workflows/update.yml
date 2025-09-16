@@ -50,7 +50,7 @@ jobs:
           TZ: America/Los_Angeles
         run: |
           set -euo pipefail
-          DATE="$(date +"%B %d, %Y %I:%M %p %Z")"
+          DATE="$(date +"%B %d, %Y %I:%M %p")"
           export DATE
           echo "Using DATE='$DATE'"
 
