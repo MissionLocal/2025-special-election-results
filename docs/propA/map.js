@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const votersTxt = p?.registered_voters ? `${fmtInt(p.registered_voters)} voters` : '';
       return `
         <div><strong>Precinct ${key(p?.precinct) || 'N/A'}</strong></div>
-        <div>Yes: ${yesTxt} • No: ${noTxt} • Turnout: ${turnoutTxt} ${votersTxt ? '• ' + votersTxt : ''}</div>
+        <div>Yes: ${yesTxt} • No: ${noTxt} • Turnout: ${turnoutTxt}</div>
       `;
     }
   
