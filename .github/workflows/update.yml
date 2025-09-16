@@ -43,35 +43,31 @@ jobs:
             --ExecutePreprocessor.allow_errors=True
 
       # 6️⃣ Insert/Update "last updated" date (idempotent, robust)
+      # 6️⃣ Insert/Update "last updated" date (export DATE + simple sed)
       - name: Insert/Update last updated date
+        shell: bash
         env:
           TZ: America/Los_Angeles
         run: |
           set -euo pipefail
           DATE="$(date +"%B %d, %Y %I:%M %p %Z")"
+          export DATE
           echo "Using DATE='$DATE'"
 
-          # Find all docs/**/index.html
-          mapfile -t files < <(find docs -type f -name "index.html")
-
-          if ((${#files[@]}==0)); then
-            echo "⚠️ No HTML files found under docs/"
-            exit 0
-          fi
-
-          for file in "${files[@]}"; do
-            # If there's an update-date span, replace its inner text (handles ' or " and newlines)
+          # Update any HTML under docs/ that has id="update-date" (or id='update-date')
+          while IFS= read -r -d '' file; do
             if grep -Eq 'id[[:space:]]*=[[:space:]]*["'"'"']update-date["'"'"']' "$file"; then
-              perl -0777 -pe 's{(<span\b[^>]*\bid\s*=\s*["'\''"]update-date["'\''"][^>]*>).*?(</span>)}{$1$ENV{DATE}$2}gsi' -i "$file"
-              echo "✅ Updated update-date span in: $file"
-            # Otherwise, replace a literal DATE_PLACEHOLDER if present
+              # Replace only the inner text of the span
+              sed -i -E 's|(<span[^>]*id=["'"'"']update-date["'"'"'][^>]*>)[^<]*(</span>)|\1'"$DATE"'\2|g' "$file"
+              echo "✅ Updated update-date in: $file"
             elif grep -q 'DATE_PLACEHOLDER' "$file"; then
-              perl -0777 -pe 's{DATE_PLACEHOLDER}{$ENV{DATE}}g' -i "$file"
+              sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
               echo "✅ Replaced DATE_PLACEHOLDER in: $file"
             else
               echo "↷ Skipped (no update-date span or placeholder): $file"
             fi
-          done
+          done < <(find docs -type f -name "*.html" -print0)
+
 
       # 7️⃣ Commit updated files
       - name: Commit changes
