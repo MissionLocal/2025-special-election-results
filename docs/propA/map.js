@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container: 'map',
       style: 'mapbox://styles/mlnow/cm2tndow500co01pw3fho5d21',
       center: [-122.496, 37.750],
-      zoom: 12
+      zoom: 12.2
     });
   
     // Helpers
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
   
       // Legend
-      legendEl.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
+      legendEl.innerHTML = legendSquaresHTML('Percentage', 'No', 'Yes');
   
       // Optional: bring label layers above fills if present
       try {
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         map.getSource('precincts').setData(next);
         clearSelection();                            // hide box + clear outline
         // If your legend scale changes by dataset, update here:
-        legendEl.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
+        legendEl.innerHTML = legendSquaresHTML('Percentage', 'No', 'Yes');
       });
     }
   
