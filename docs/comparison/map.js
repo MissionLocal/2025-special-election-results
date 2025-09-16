@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
       legend1El.id = 'legend1';
       map1Container.appendChild(legend1El);
     }
-    legend1El.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
+    legend1El.innerHTML = legendSquaresHTML('Percentage', 'No', 'Yes');
 
     legend2El = document.getElementById('legend2');
     if (!legend2El) {
@@ -175,13 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
       legend2El.id = 'legend2';
       map2Container.appendChild(legend2El);
     }
-    legend2El.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
+    legend2El.innerHTML = legendSquaresHTML('Percentage', 'No', 'Yes');
   }
   function updateMap2Legend(mode) {
     if (!legend2El) return;
     legend2El.innerHTML = (mode === 'propK')
-      ? legendSquaresHTML('Yes vote %', 'No', 'Yes')
-      : legendSquaresHTML('Engardio %', '0%', '100%');
+      ? legendSquaresHTML('Percentage', 'No', 'Yes')
+      : legendSquaresHTML('Engardio % of first votes', '0%', '100%');
   }
 
   // Sync camera
