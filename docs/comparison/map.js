@@ -294,12 +294,14 @@ document.addEventListener('DOMContentLoaded', () => {
         lastSelectedPrecinct = getPrecinct(e.features[0].properties || '');
         updateBoxesFromPrecinct(lastSelectedPrecinct);
         setHoverPrecinct(lastSelectedPrecinct);
+        showInfoBoxes();                 
       });
       map2.on('click', 'map2-fill', e => {
         if (!e.features.length) return;
         lastSelectedPrecinct = getPrecinct(e.features[0].properties || '');
         updateBoxesFromPrecinct(lastSelectedPrecinct);
         setHoverPrecinct(lastSelectedPrecinct);
+        showInfoBoxes();                 
       });
 
 
@@ -310,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If you want them totally empty (disappear):
         infoBox1.innerHTML = '';
         infoBox2.innerHTML = '';
+        hideInfoBoxes();                 
         // If you prefer the original hints instead, swap the two lines above for:
         // infoBox1.innerHTML = '<div>Click a precinct.</div>';
         // const mode = modeSelect?.value || 'propK';
@@ -336,10 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
       sync(map1, map2);
       const initialMode = modeSelect?.value || 'propK';
       updateMap2Title(initialMode);
-      infoBox1.innerHTML = '<div>Click a precinct.</div>';
-      infoBox2.innerHTML = (initialMode === 'propK')
-        ? '<div>Right map: <strong>Prop K</strong>. Click a precinct.</div>'
-        : '<div>Right map: <strong>2022 Results</strong>. Click a precinct.</div>';
 
       // Legends
       injectLegends();
