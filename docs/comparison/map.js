@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- View presets for desktop vs mobile ---
   const VIEW = {
-    desktop: { center: [-122.496, 37.750], zoom: 12.5 },  // ← tweak as you like
-    mobile: { center: [-122.488, 37.745], zoom: 11.9 }   // ← tweak as you like
+    desktop: { center: [-122.494, 37.753], zoom: 12 },  
+    mobile: { center: [-122.508, 37.750], zoom: 11.7 } 
   };
   const MEDIA = window.matchMedia('(max-width: 640px)');   // mobile breakpoint
   let viewMode = MEDIA.matches ? 'mobile' : 'desktop';
