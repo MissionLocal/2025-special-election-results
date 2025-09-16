@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const hasLayer = (m, id) => !!m.getLayer(id);
   
-    // COMPACT info templates (numbers normal weight, "Precinct X" header)
+    // COMPACT info templates
     function tplYesNoCompact(p) {
       const yes = Number(p?.yes_perc);
       const yesTxt = fmtPct(yes);
@@ -115,36 +115,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     // Legends (discrete squares)
-// Legend squares using RGB + alpha (only squares are translucent)
-const SWATCH_ALPHA = 0.6; // match your map fill-opacity
-const LEGEND_COLORS_RGB = [
-  [153,  0,   0],  // #990000
-  [224, 34,  20],  // #E02214
-  [229, 76,  76],  // #E54C4C
-  [238,118,  81],  // #EE7651
-  [239,159, 106],  // #EF9F6A
-  [255,203, 120],  // #FFCB78
-  [157,244, 217],  // #9DF4D9
-  [101,234, 208],  // #65EAD0
-  [ 13,214, 199],  // #0DD6C7
-  [ 13,193, 211],  // #0DC1D3
-  [  0,164, 191],  // #00A4BF
-  [  0,125, 188]   // #007DBC
-];
-
-const legendSquaresHTML = (title, leftLabel, rightLabel) => `
-  <div class="legend-title">${title}</div>
-  <div class="legend-row">
-    ${LEGEND_COLORS_RGB.map(([r,g,b]) =>
-      `<span class="legend-swatch"
-             style="display:inline-block;background: rgba(${r}, ${g}, ${b}, ${SWATCH_ALPHA});"></span>`
-    ).join('')}
-  </div>
-  <div class="legend-ends" style="display:flex;justify-content:space-between;margin-top:4px;width:100%;">
-    <span>${leftLabel}</span><span>${rightLabel}</span>
-  </div>
-`;
-
+    // Legend squares using RGB + alpha (only squares are translucent)
+    const SWATCH_ALPHA = 0.6; // match your map fill-opacity
+    const LEGEND_COLORS_RGB = [
+      [153,  0,   0],  // #990000
+      [224, 34,  20],  // #E02214
+      [229, 76,  76],  // #E54C4C
+      [238,118,  81],  // #EE7651
+      [239,159, 106],  // #EF9F6A
+      [255,203, 120],  // #FFCB78
+      [157,244, 217],  // #9DF4D9
+      [101,234, 208],  // #65EAD0
+      [ 13,214, 199],  // #0DD6C7
+      [ 13,193, 211],  // #0DC1D3
+      [  0,164, 191],  // #00A4BF
+      [  0,125, 188]   // #007DBC
+    ];
+  
+    const legendSquaresHTML = (title, leftLabel, rightLabel) => `
+      <div class="legend-title">${title}</div>
+      <div class="legend-row">
+        ${LEGEND_COLORS_RGB.map(([r,g,b]) =>
+          `<span class="legend-swatch"
+                 style="display:inline-block;background: rgba(${r}, ${g}, ${b}, ${SWATCH_ALPHA});"></span>`
+        ).join('')}
+      </div>
+      <div class="legend-ends" style="display:flex;justify-content:space-between;margin-top:4px;width:100%;">
+        <span>${leftLabel}</span><span>${rightLabel}</span>
+      </div>
+    `;
+  
     let legend1El, legend2El;
     function injectLegends() {
       const map1Container = document.getElementById('map1').parentElement;
@@ -178,8 +178,18 @@ const legendSquaresHTML = (title, leftLabel, rightLabel) => `
     // Sync camera
     function sync(a, b) {
       let sa = false, sb = false;
-      a.on('move', () => { if (sa) return; sb = true; b.jumpTo({center:a.getCenter(), zoom:a.getZoom(), bearing:a.getBearing(), pitch:a.getPitch()}); sb = false; });
-      b.on('move', () => { if (sb) return; sa = true; a.jumpTo({center:b.getCenter(), zoom:b.getZoom(), bearing:b.getBearing(), pitch:b.getPitch()}); sa = false; });
+      a.on('move', () => {
+        if (sa) return;
+        sb = true;
+        b.jumpTo({center:a.getCenter(), zoom:a.getZoom(), bearing:a.getBearing(), pitch:a.getPitch()});
+        sb = false;
+      });
+      b.on('move', () => {
+        if (sb) return;
+        sa = true;
+        a.jumpTo({center:b.getCenter(), zoom:b.getZoom(), bearing:b.getBearing(), pitch:b.getPitch()});
+        sa = false;
+      });
     }
   
     // Title helper
@@ -305,48 +315,25 @@ const legendSquaresHTML = (title, leftLabel, rightLabel) => `
       injectLegends();
       updateMap2Legend(initialMode);
   
-      pymChild.sendHeight();
-  
-      // Dropdown: swap Map 2 between Prop K and 2022
-      if (modeSelect) {
-        modeSelect.addEventListener('change', (e) => {
-          const mode = e.target.value; // 'propK' | 'd4_2022'
-          const data = (mode === 'propK') ? propK : d4;
-  
-          // swap source data + rebuild layers
-          map2.getSource('map2src').setData(data);
-          buildMap2Layers(mode);
-  
-          // update title, legend
-          updateMap2Title(mode);
-          updateMap2Legend(mode);
-  
-          // If a precinct was selected before, re-show its info & highlight
-          if (lastSelectedPrecinct) {
-            updateBoxesFromPrecinct(lastSelectedPrecinct);
-            setHoverPrecinct(lastSelectedPrecinct);
-          } else {
-            // otherwise show the hint for the current mode
-            infoBox2.innerHTML = (mode === 'propK')
-              ? '<div>Right map: <strong>Prop K</strong>. Click a precinct.</div>'
-              : '<div>Right map: <strong>2022 Results</strong>. Click a precinct.</div>';
-            setHoverPrecinct(''); // clear highlight
-          }
-  
-          pymChild.sendHeight();
-        });
-      }
+      // --- Single-shot Pym height AFTER both maps are idle + fonts are ready ---
+      Promise.all([
+        new Promise(r => map1.once('idle', r)),
+        new Promise(r => map2.once('idle', r)),
+        (document.fonts?.ready ?? Promise.resolve())
+      ]).then(() => {
+        // allow one paint/layout tick
+        requestAnimationFrame(() => pymChild.sendHeight());
+      });
     })
     .catch(err => {
       console.error('INIT ERROR:', err);
       infoBox2.innerHTML = `<div style="color:#b00">Error loading maps: ${err?.message || err}</div>`;
     });
   
-    // Resize
+    // Resize (no Pym here — single-shot strategy)
     window.addEventListener('resize', () => {
       map1.resize();
       map2.resize();
-      pymChild.sendHeight();
     });
   });
   
