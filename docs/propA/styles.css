@@ -46,7 +46,7 @@ body {
     max-width: 240px;
     pointer-events: none;
   }
-  .legend .legend-title { font-weight: 600; color: #333; margin-bottom: 4px; }
+  .legend .legend-title {color: #333; margin-bottom: 4px; }
   .legend .legend-row { display: flex; gap: 3px; }
   .legend .legend-swatch {
     display: inline-block; width: 10px; height: 10px; border-radius: 2px;
