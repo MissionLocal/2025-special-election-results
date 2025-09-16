@@ -303,35 +303,35 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
 
-// Helper to clear selection + info boxes
-function clearSelection() {
-  lastSelectedPrecinct = null;
-  setHoverPrecinct('');
-  // If you want them totally empty (disappear):
-  infoBox1.innerHTML = '';
-  infoBox2.innerHTML = '';
-  // If you prefer the original hints instead, swap the two lines above for:
-  // infoBox1.innerHTML = '<div>Click a precinct.</div>';
-  // const mode = modeSelect?.value || 'propK';
-  // infoBox2.innerHTML = mode === 'propK'
-  //   ? '<div>Right map: <strong>Prop K</strong>. Click a precinct.</div>'
-  //   : '<div>Right map: <strong>2022 Results</strong>. Click a precinct.</div>';
-}
+      // Helper to clear selection + info boxes
+      function clearSelection() {
+        lastSelectedPrecinct = null;
+        setHoverPrecinct('');
+        // If you want them totally empty (disappear):
+        infoBox1.innerHTML = '';
+        infoBox2.innerHTML = '';
+        // If you prefer the original hints instead, swap the two lines above for:
+        // infoBox1.innerHTML = '<div>Click a precinct.</div>';
+        // const mode = modeSelect?.value || 'propK';
+        // infoBox2.innerHTML = mode === 'propK'
+        //   ? '<div>Right map: <strong>Prop K</strong>. Click a precinct.</div>'
+        //   : '<div>Right map: <strong>2022 Results</strong>. Click a precinct.</div>';
+      }
 
-// Background clicks (outside precinct polygons) clear selection
-map1.on('click', (e) => {
-  const hit = map1.queryRenderedFeatures(e.point, { layers: ['propA-fill'] });
-  if (!hit.length) clearSelection();
-});
-map2.on('click', (e) => {
-  const hit = map2.queryRenderedFeatures(e.point, { layers: ['map2-fill'] });
-  if (!hit.length) clearSelection();
-});
+      // Background clicks (outside precinct polygons) clear selection
+      map1.on('click', (e) => {
+        const hit = map1.queryRenderedFeatures(e.point, { layers: ['propA-fill'] });
+        if (!hit.length) clearSelection();
+      });
+      map2.on('click', (e) => {
+        const hit = map2.queryRenderedFeatures(e.point, { layers: ['map2-fill'] });
+        if (!hit.length) clearSelection();
+      });
 
-// Optional: ESC key also clears
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') clearSelection();
-});
+      // Optional: ESC key also clears
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') clearSelection();
+      });
       // Sync + initial overlays
       sync(map1, map2);
       const initialMode = modeSelect?.value || 'propK';
@@ -345,7 +345,18 @@ window.addEventListener('keydown', (e) => {
       injectLegends();
       updateMap2Legend(initialMode);
 
+      // === Info box show/hide (overlay) ===
+      function showInfoBoxes() {
+        infoBox1.style.display = '';
+        infoBox2.style.display = '';
+      }
+      function hideInfoBoxes() {
+        infoBox1.style.display = 'none';
+        infoBox2.style.display = 'none';
+      }
 
+      // Start hidden (no selection yet)
+      hideInfoBoxes();
 
       // --- Robust Pym height sync ---
       (function robustPym() {
