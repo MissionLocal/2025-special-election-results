@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `
     <div><strong>Precinct ${key(p?.precinct) || 'N/A'}</strong></div>
     <div>Yes: ${yesTxt} • No: ${noTxt} • Turnout: ${turnoutTxt}</div>
-    ${votersTxt ? `<div style="color:#666;font-size:12px;margin-top:6px;">${votersTxt}</div>` : ''}
   `;
     }
 
