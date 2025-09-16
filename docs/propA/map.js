@@ -1,4 +1,4 @@
-// map.js (single-map version with show/hide info box + persistent selection)
+// map.js — single map with two-map-style hover + show/hide info box
 document.addEventListener('DOMContentLoaded', async () => {
     const pymChild = new pym.Child();
     mapboxgl.accessToken = "pk.eyJ1IjoibWxub3ciLCJhIjoiY21mZDE2anltMDRkbDJtcHM1Y2M0eTFjNCJ9.nmMGLA-zX7BqznSJ2po65g";
@@ -26,9 +26,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const yesTxt = fmtPct(yes);
       const noTxt  = Number.isFinite(yes) ? fmtPct(100 - yes) : 'N/A';
       const turnoutTxt = (p?.turnout != null) ? fmtPct(p.turnout) : 'N/A';
+      const votersTxt = p?.registered_voters ? `${fmtInt(p.registered_voters)} voters` : '';
       return `
         <div><strong>Precinct ${key(p?.precinct) || 'N/A'}</strong></div>
-        <div>Yes: ${yesTxt} • No: ${noTxt} • Turnout: ${turnoutTxt}</div>
+        <div>Yes: ${yesTxt} • No: ${noTxt} • Turnout: ${turnoutTxt} ${votersTxt ? '• ' + votersTxt : ''}</div>
       `;
     }
   
@@ -72,24 +73,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     // Load GeoJSON
     const dataUrl = 'propA.geojson';
-    const gj = await fetch(dataUrl).then(r => r.json());
+    const gj = await fetch(dataUrl).then(r => {
+      if (!r.ok) throw new Error(`Failed to load ${dataUrl}`);
+      return r.json();
+    });
     indexGeojson(gj);
   
-    // Selection state + show/hide helpers -------------- NEW
+    // Selection state + show/hide helpers
     let lastSelectedPrecinct = null;
-    function showInfoBox() { infoBox.style.display = ''; }
-    function hideInfoBox() { infoBox.style.display = 'none'; }
+    const showInfoBox = () => { infoBox.style.display = ''; };
+    const hideInfoBox = () => { infoBox.style.display = 'none'; };
+    const clearSelection = () => {
+      lastSelectedPrecinct = null;
+      infoBox.innerHTML = '';
+      hideInfoBox();
+      map.setFilter('precincts-hover', ['==', ['get','precinct'], '' ]);
+    };
   
     map.on('load', () => {
       map.addSource('precincts', { type: 'geojson', data: gj });
   
-      // layers
-      map.addLayer({ id: 'precincts-fill',     type: 'fill', source: 'precincts', paint: yesPercBinPaint });
-      map.addLayer({ id: 'precincts-outline',  type: 'line', source: 'precincts', paint: { 'line-color':'#fff','line-width':0.5 } });
-      map.addLayer({ id: 'precincts-hover',    type: 'line', source: 'precincts', paint: { 'line-color':'#fff','line-width':2.5 }, filter: ['==',['get','precinct'], '' ] });
-      map.addLayer({ id: 'precincts-selected', type: 'line', source: 'precincts', paint: { 'line-color':'#fff','line-width':3 },   filter: ['==',['get','precinct'], '' ] });
+      // Layers (hover outline doubles as selection outline—just like the two-map file)
+      map.addLayer({ id: 'precincts-fill',    type: 'fill', source: 'precincts', paint: yesPercBinPaint });
+      map.addLayer({ id: 'precincts-outline', type: 'line', source: 'precincts',
+        paint: { 'line-color':'#fff', 'line-width': 0.5 }
+      });
+      map.addLayer({ id: 'precincts-hover',   type: 'line', source: 'precincts',
+        paint: { 'line-color':'#fff', 'line-width': 2.5 },
+        filter: ['==', ['get','precinct'], '' ]
+      });
   
-      // Hover (doesn't erase selection)
+      // Hover (same semantics as two-map)
       map.on('mousemove', 'precincts-fill', (e) => {
         if (!e.features?.length) return;
         const k = getPrecinct(e.features[0].properties || {});
@@ -101,82 +115,104 @@ document.addEventListener('DOMContentLoaded', async () => {
         map.getCanvas().style.cursor = '';
       });
   
-      // Click → select + info
+      // Click polygon → set the SAME hover outline to that precinct + show box
       map.on('click', 'precincts-fill', (e) => {
         if (!e.features?.length) return;
         const k = getPrecinct(e.features[0].properties || {});
         lastSelectedPrecinct = k;
         const props = byPrecinct[k] || e.features[0].properties || {};
         infoBox.innerHTML = tplInfoOneLine(props);
-        map.setFilter('precincts-selected', ['==', ['get','precinct'], k]); // persist highlight
+        map.setFilter('precincts-hover', ['==', ['get','precinct'], k]); // stick the outline
         showInfoBox();
+        map.getCanvas().style.cursor = 'pointer';
       });
   
       // Click gray background → clear + hide
       map.on('click', (e) => {
         const hit = map.queryRenderedFeatures(e.point, { layers: ['precincts-fill'] });
-        if (!hit.length) {
-          lastSelectedPrecinct = null;
-          infoBox.innerHTML = '';
-          hideInfoBox();
-          map.setFilter('precincts-selected', ['==', ['get','precinct'], '' ]);
-          map.setFilter('precincts-hover',    ['==', ['get','precinct'], '' ]);
-        }
+        if (!hit.length) clearSelection();
       });
   
       // ESC to clear/hide
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          lastSelectedPrecinct = null;
-          infoBox.innerHTML = '';
-          hideInfoBox();
-          map.setFilter('precincts-selected', ['==', ['get','precinct'], '' ]);
-          map.setFilter('precincts-hover',    ['==', ['get','precinct'], '' ]);
-        }
+        if (e.key === 'Escape') clearSelection();
       });
   
       // Legend
       legendEl.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
   
-      // Optional: move labels up
+      // Optional: bring label layers above fills if present
       try {
         if (map.getLayer('road-label-navigation')) map.moveLayer('road-label-navigation');
         if (map.getLayer('settlement-subdivision-label')) map.moveLayer('settlement-subdivision-label');
+        // keep hover stroke above outlines
+        map.moveLayer('precincts-hover');
       } catch {}
   
-      // Start with box hidden (don’t write hint text)
+      // Start hidden (no hints rendered so it truly disappears)
       hideInfoBox();
   
-      // Initial height sync (robust burst for WP)
-      Promise.all([
-        new Promise(r => map.once('idle', r)),
-        (document.fonts?.ready ?? Promise.resolve())
-      ]).then(() => {
-        const send = () => pymChild.sendHeight();
-        requestAnimationFrame(send);
-        // short keep-alive to catch late reflows
-        let n = 0; const t = setInterval(() => { send(); if (++n >= 10) clearInterval(t); }, 150);
-      });
+      // --- Robust Pym height sync (good for WP reflows) ---
+      (function robustPym() {
+        // tiny sentinel so absolutely positioned overlays don't get clipped
+        const sentinel = document.createElement('div');
+        sentinel.style.cssText = 'height:1px;margin-top:32px;';
+        document.body.appendChild(sentinel);
+  
+        const sendBurst = (ms = 1800, every = 150) => {
+          const end = performance.now() + ms;
+          const tick = () => {
+            pymChild.sendHeight();
+            if (performance.now() < end) setTimeout(tick, every);
+          };
+          requestAnimationFrame(tick);
+        };
+  
+        let tId = null;
+        const sendThrottled = () => {
+          if (tId) return;
+          tId = setTimeout(() => { tId = null; pymChild.sendHeight(); }, 100);
+        };
+  
+        Promise.all([
+          new Promise(r => map.once('idle', r)),
+          (document.fonts?.ready ?? Promise.resolve())
+        ]).then(() => {
+          requestAnimationFrame(() => {
+            pymChild.sendHeight();
+            sendBurst();
+          });
+        });
+  
+        new ResizeObserver(sendThrottled).observe(document.body);
+        const mo = new MutationObserver(sendThrottled);
+        mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true });
+  
+        window.addEventListener('orientationchange', () => {
+          setTimeout(() => { map.resize(); sendBurst(1000, 150); }, 200);
+        });
+      })();
     });
   
-    // If you switch datasets later, also clear selection & hide box
+    // Optional dataset switcher: also clear & hide like the two-map code
     const selector = document.getElementById('propositionDropdown');
     if (selector) {
       selector.addEventListener('change', async (e) => {
-        const v = e.target.value;            // e.g., "A", "K"
-        const nextUrl = `data/${v}.geojson`;
-        const next = await fetch(nextUrl).then(r => r.json());
+        const v = e.target.value;                   // e.g., "A", "K"
+        const nextUrl = `data/${v}.geojson`;        // adjust path as needed
+        const next = await fetch(nextUrl).then(r => {
+          if (!r.ok) throw new Error(`Failed to load ${nextUrl}`);
+          return r.json();
+        });
         indexGeojson(next);
         map.getSource('precincts').setData(next);
-        lastSelectedPrecinct = null;
-        infoBox.innerHTML = '';
-        hideInfoBox();
-        map.setFilter('precincts-selected', ['==', ['get','precinct'], '' ]);
-        map.setFilter('precincts-hover',    ['==', ['get','precinct'], '' ]);
+        clearSelection();                            // hide box + clear outline
+        // If your legend scale changes by dataset, update here:
+        legendEl.innerHTML = legendSquaresHTML('Yes vote %', 'No', 'Yes');
       });
     }
   
-    // Resize (no sendHeight needed; the burst above + theme observers usually cover it)
+    // Resize (mapbox relayout; Pym handled via observers/burst)
     window.addEventListener('resize', () => { map.resize(); });
   });
   
