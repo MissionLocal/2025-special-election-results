@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Two Synchronized Maps</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Mapbox CSS -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+body {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+}
+
+/* Controls: left-align and match map width */
+.controls {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  margin: 15px auto;
+  width: 610px;                 /* same as .maps-wrapper */
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+}
+.controls label { font-weight: 500; color: #333; }
+.controls select {
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+.controls select:focus { outline: none; border-color: #666; }
+
+/* Desktop: side by side */
+.maps-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 610px;                 /* 300 + 300 + gap */
+  margin: 0 auto;
+}
+
+.map-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 300px;
+  position: relative;           /* enable absolute-positioned overlays */
+}
+
+/* MAP */
+.map {
+  width: 100%;
+  height: 500px;
+}
+
+/* OVERLAYS INSIDE MAP */
+.map-container h3 {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  background: rgba(255,255,255,0.95);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  pointer-events: none;         /* don't block map drags */
+}
+
+/* Info box overlays INSIDE the map */
+.info-box {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  width: calc(100% - 16px);
+  max-width: 280px;             /* fit nicely on your 300px map */
+  box-sizing: border-box;
+  padding: 8px 10px;            /* slightly tighter */
+  background: rgba(255,255,255,0.98);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 13px;              /* condensed */
+  line-height: 1.35;
+  max-height: 40%;
+  overflow-y: auto;
+  pointer-events: auto;         /* interactive if needed */
+}
+
+/* Legend overlay: squares + end labels (left-aligned, compact, not full-width) */
+.legend {
+  position: absolute;
+  top: 46px;                    /* space under the title */
+  left: 8px;                    /* align to left edge of the map */
+  right: auto;
+  z-index: 2;
+  background: rgba(255,255,255,0.95);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  padding: 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.1;
+  display: inline-block;        /* shrink to content */
+  max-width: 240px;             /* prevent stretching */
+  pointer-events: none;         /* pan/zoom under it */
+}
+.legend .legend-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;           /* tight */
+}
+.legend .legend-row {
+  display: flex;
+  gap: 3px;                     /* tight spacing */
+}
+.legend .legend-swatch {
+  display: inline-block;        /* ensure width/height apply */
+  width: 10px;                  /* small squares */
+  height: 10px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.10);
+}
+.legend .legend-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;              /* tight */
+  color: #222;
+  width: 100%;
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .maps-wrapper {
+    flex-direction: column;
+    width: auto;
+    max-width: 100%;
+    margin: 0 10px;
+  }
+  .map-container { width: 100%; }
+  .map { height: 300px; }
+
+  .info-box {
+    max-width: none;
+    width: calc(100% - 16px);
+    font-size: 12.5px;
+  }
+
+  /* controls align with side margins on mobile */
+  .controls {
+    width: auto;
+    margin: 10px;
+    justify-content: flex-start;
+  }
+
+  /* legend compact + left-aligned under title */
+  .legend {
+    top: 40px;
+    left: 6px;
+    right: auto;
+    padding: 5px 7px;
+    font-size: 11px;
+    max-width: 220px;
+  }
+  .legend .legend-swatch {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="controls" style="font: 16px Barlow, sans-serif;">
+        <label for="map2Mode">Compare results to:</label>
+        <select id="map2Mode">
+            <option value="propK" selected>Nov. 2024 Propostion K</option>
+            <option value="d4_2022">Nov. 2022 supervisor election</option>
+        </select>
+    </div>
+    <div class="maps-wrapper">
+        <div class="map-container">
+            <h3>Proposition A results</h3>
+            <div id="map1" class="map"></div>
+            <div id="info-map1" class="info-box"></div>
+        </div>
+
+        <div class="map-container">
+            <!-- Map 2 controls -->
+            <h3 id="map2title">Nov. 2024 Proposition K</h3>
+            <div id="map2" class="map"></div>
+            <div id="info-map2" class="info-box"></div>
+        </div>
+
+    </div>
+
+    <!-- Mapbox JS -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js'></script>
+    <!-- Pym.js -->
+    <script src="https://pym.nprapps.org/pym.v1.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="map.js"></script>
+    <script>
+        const map2Title = document.getElementById("map2title");
+        const map2Mode = document.getElementById("map2Mode");
+
+        map2Mode.addEventListener("change", function () {
+            if (this.value === "propK") {
+                map2Title.textContent = "Nov. 2024 Proposition K";
+            } else if (this.value === "d4_2022") {
+                map2Title.textContent = "Nov. 2022 supervisor election";
+            }
+        });
+
+    </script>
+</body>
+
+</html>

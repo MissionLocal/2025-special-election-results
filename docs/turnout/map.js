@@ -53,10 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         
-        
-        
-        
-
         // Add a base outline for the precincts
         map.addLayer({
             'id': 'precincts-outline',

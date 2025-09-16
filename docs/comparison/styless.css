@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 2px;
+}
+
+#map {
+    width: 100vw;
+    max-width: 400px;
+    height: 500px;
+    margin: 10px 10px 10px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+
+}
+
+.cont {
+    display: flex;
+    justify-content: center; /* Center the container horizontally */
+    align-items: center; /* Center the container vertically, if needed */
+}
+
+.instruction-wrapper {
+    align-items: left !important; 
+}
+
+
+.instruction { 
+    font-size: 16px;
+    font-family: Barlow, sans-serif;
+    margin: 10px 0;
+    max-width: 600px; /* Optional: limit width for readability */
+}
+
+
+/* Container layout */
+.dropdownContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 10px 10px 10px 10px;
+
+}
+
+.legend-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* Space between items */
+}
+
+#legend-district4 {
+    display: block !important; /* Display only legend-district1 by default */
+}
+
+.legend {
+    background-color: white;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    font-family: Barlow, sans-serif;
+    display: none; /* Hide all legend elements by default */
+}
+
+.legend-container {
+    display: flex;
+    justify-content: center !important;
+    gap: 20px; /* Space between the two legend boxes */
+    margin: 10px auto; /* Center with auto margins */
+    text-align: center;
+    padding-bottom: 10px;
+    max-width: 450px; /* Limit width for better readability */
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.color-box {
+    width: 20px;  /* Width of the color box */
+    height: 20px; /* Height of the color box */
+    margin-right: 5px; /* Space between color box and text */
+    margin-left: 10px;
+    /* opacity: 0.6; */
+}
+
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .legend-container {
+        flex-direction: column; /* Stack boxes on mobile */
+        align-items: center; /* Center boxes horizontally */
+    }
+}
+
+#details {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+}
+
+.popup-header {
+    margin: 2px 0; /* Reduce top and bottom margins */
+    font-size: 16px; /* Adjust header font size */
+    font-family: 'Barlow', sans-serif;
+}
+
+.popup-text {
+    margin: 2px 0; /* Reduce margins on text elements */
+    font-size: 16px; /* Adjust text font size */
+    line-height: 1.2; /* Adjust line height */
+    font-family: 'Barlow', sans-serif;
+
+}
+
+.mapboxgl-popup-content {
+    background-color: rgba(255, 255, 255); /* 0.8 for 80% opacity */
+    border-radius: 5px; /* Optional: adds rounded corners */
+    color: #333; /* Text color to ensure readability */
+}
