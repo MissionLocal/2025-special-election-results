@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       map.addLayer({ id: 'precincts-fill',     type: 'fill', source: 'precincts', paint: yesPercBinPaint });
       map.addLayer({ id: 'precincts-outline',  type: 'line', source: 'precincts', paint: { 'line-color':'#fff','line-width':0.5 } });
       map.addLayer({ id: 'precincts-hover',    type: 'line', source: 'precincts', paint: { 'line-color':'#fff','line-width':2.5 }, filter: ['==',['get','precinct'], '' ] });
-      map.addLayer({ id: 'precincts-selected', type: 'line', source: 'precincts', paint: { 'line-color':'#000','line-width':3 },   filter: ['==',['get','precinct'], '' ] });
+      map.addLayer({ id: 'precincts-selected', type: 'line', source: 'precincts', paint: { 'line-color':'#fff','line-width':3 },   filter: ['==',['get','precinct'], '' ] });
   
       // Hover (doesn't erase selection)
       map.on('mousemove', 'precincts-fill', (e) => {
