@@ -1,143 +1,86 @@
+/* ===== Base ===== */
 body {
     margin: 0;
-    padding: 0;
-    padding-bottom: 2px;
-}
-
-#map {
+    padding: 0 0 2px 0;
+    font-family: 'Barlow', sans-serif;
+  }
+  
+  /* ===== Layout ===== */
+  .cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .map-container {
+    position: relative;            /* overlays anchor to this */
+    width: 100vw;
+    max-width: 400px;
+    margin: 10px auto;             /* <-- moved the spacing here (was on #map) */
+  }
+  
+  #map {
     width: 100vw;
     max-width: 400px;
     height: 500px;
-    margin: 10px 10px 10px 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
-
-}
-
-.cont {
-    display: flex;
-    justify-content: center; /* Center the container horizontally */
-    align-items: center; /* Center the container vertically, if needed */
-}
-
-.instruction-wrapper {
-    align-items: left !important; 
-}
-
-.instruction { 
-    font-size: 16px;
-    font-family: Barlow, sans-serif;
-    margin: 10px 0;
-    max-width: 600px; /* Optional: limit width for readability */
-}
-
-
-/* Container layout */
-.dropdownContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 10px 10px 10px 10px;
-
-}
-
-#last-updated {
-    margin-top: 0;
-    padding-top: 0;
-}
-
-
-.legend-labels {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 5px;
-    font-family: Barlow, sans-serif;
-
-}
-
-/* #legend-A {
-    display: block;
-} */
-
-.legend-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Space between the two legend boxes */
-    margin: 10px; /* Space between the map and the legends */
-    /* padding-bottom: 10px; */
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-    .legend-container {
-        flex-direction: column; /* Stack boxes on mobile */
-        align-items: center; /* Center boxes horizontally */
-    }
-}
-
-.color-scale { 
-    max-height: 50px;
-}
-
-.legend {
-    background-color: white;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: fit-content;
-    font-family: Barlow, sans-serif;
-    display: none;
-}
-
-#last-updated {
-    display: block;
-    margin-top: 20px; /* push it down so it doesn't overlap the legend */
-}
-
-.legend-static {
-    background-color: white;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: fit-content;
-    font-family: Barlow, sans-serif;
-}
-
-#propositionDropdown {
-    font-size: 20px; /* Increase font size for better readability */
-    border-radius: 5px; /* Rounded corners */
-    border: 0px solid gray; /* Border for visibility */
-    margin: 0 auto; /* Center the dropdown itself */
-    font-family: Barlow, sans-serif;
-    width: 100vw;
-    max-width: 600px;
-    background-color: white; /* Match legend background */
-    padding: 5px; /* Add padding similar to legend */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
-    appearance: none; /* Remove default styling in some browsers */
-    position: relative;
-    padding-right: 30px; /* Space for arrow */
-}
-
-
-
-.popup-header {
-    margin: 2px 0; /* Reduce top and bottom margins */
-    font-size: 16px; /* Adjust header font size */
-    font-family: Barlow, sans-serif;
-}
-
-.popup-text {
-    margin: 2px 0; /* Reduce margins on text elements */
-    font-size: 16px; /* Adjust text font size */
-    line-height: 1.2; /* Adjust line height */
-    font-family: Barlow, sans-serif;
-
-}
-
-
-.mapboxgl-popup-content {
-    background-color: rgba(255, 255, 255); /* 0.8 for 80% opacity */
-    border-radius: 5px; /* Optional: adds rounded corners */
-    color: #333; /* Text color to ensure readability */
-}
+    margin: 0;                     /* <-- no margin so overlays stay inside */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Old static legend UI hidden */
+  .legend-container { display: none !important; }
+  
+  /* Legend pill (top-left with breathing room) */
+  .legend {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    background: rgba(255,255,255,0.95);
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    padding: 6px 8px;
+    font-size: 11.5px;
+    line-height: 1.1;
+    display: inline-block;
+    max-width: 240px;
+    pointer-events: none;
+  }
+  .legend .legend-title { font-weight: 600; color: #333; margin-bottom: 4px; }
+  .legend .legend-row { display: flex; gap: 3px; }
+  .legend .legend-swatch {
+    display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.10);
+  }
+  .legend .legend-ends { display: flex; justify-content: space-between; margin-top: 4px; width: 100%; color: #222; }
+  
+  /* Info box (centered near the bottom) */
+  .info-box {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 14px;
+    z-index: 2;
+    width: calc(100% - 12px);      /* slim side insets */
+    max-width: 460px;              /* a hair wider */
+    box-sizing: border-box;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.98);
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 13px;               /* match two-map cards */
+    line-height: 1.35;
+    max-height: 40%;
+    overflow-y: auto;
+    font-family: 'Barlow', sans-serif;
+  }
+  
+  /* Keep desktop sizing on mobile for this single-map page */
+  @media (max-width: 768px) {
+    .map-container { max-width: 400px; }
+    #map { height: 500px; }
+    .legend { top: 14px; left: 14px; }
+    .legend .legend-swatch { width: 10px; height: 10px; }
+    .info-box { width: calc(100% - 12px); max-width: 460px; font-size: 13px; }
+  }
+  

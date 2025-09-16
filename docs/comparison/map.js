@@ -172,7 +172,7 @@ const legendSquaresHTML = (title, leftLabel, rightLabel) => `
       if (!legend2El) return;
       legend2El.innerHTML = (mode === 'propK')
         ? legendSquaresHTML('Yes vote %', 'No', 'Yes')
-        : legendSquaresHTML('Engardio %', 'Lower', 'Higher');
+        : legendSquaresHTML('Engardio %', '0%', '100%');
     }
   
     // Sync camera
