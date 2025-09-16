@@ -43,16 +43,42 @@ jobs:
             --ExecutePreprocessor.allow_errors=True
 
       # 6️⃣ Insert last updated date (only if this is "Update Charts")
-      - name: Insert last updated date
-        if: ${{ github.workflow == 'Update Charts' }}
+# 6️⃣ Insert/Update "last updated" date (idempotent)
+      - name: Insert/Update last updated date
+        shell: bash
+        env:
+          TZ: America/Los_Angeles
         run: |
-          DATE=$(TZ="America/Los_Angeles" date +"%B %d, %Y %I:%M %p %Z")
-          echo "Updating HTML files with date: $DATE"
-          for file in docs/index.html docs/*/index.html; do
-            if [ -f "$file" ]; then
+          set -euo pipefail
+          DATE="$(date +"%B %d, %Y %I:%M %p %Z")"
+          echo "Using DATE='$DATE'"
+
+          shopt -s nullglob
+          files=(docs/index.html docs/*/index.html)
+
+          any=0
+          for file in "${files[@]}"; do
+            [ -f "$file" ] || continue
+
+            if grep -q 'id="update-date"' "$file"; then
+              # Update inner text of the existing span
+              sed -i -E 's|(id="update-date"[^>]*>)[^<]*(</span>)|\1'"$DATE"'\2|g' "$file"
+              echo "✅ Updated <span id=\"update-date\"> in: $file"
+              any=1
+            elif grep -q 'DATE_PLACEHOLDER' "$file"; then
+              # One-time bootstrap: replace the placeholder text
               sed -i "s|DATE_PLACEHOLDER|$DATE|g" "$file"
+              echo "✅ Replaced DATE_PLACEHOLDER in: $file"
+              any=1
+            else
+              echo "↷ Skipped (no update-date span or placeholder): $file"
             fi
           done
+
+          if [ "$any" -eq 0 ]; then
+            echo "⚠️ No files updated. Ensure your HTML has either <span id=\"update-date\">…</span> or DATE_PLACEHOLDER."
+          fi
+
 
       # 7️⃣ Commit updated files
       - name: Commit changes
