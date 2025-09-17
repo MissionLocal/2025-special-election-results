@@ -42,23 +42,42 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const hasLayer = (m, id) => !!m.getLayer(id);
 
+  // ------- helpers (added) -------
+  const asNum = v => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  const pickField = (obj, names) => names.map(n => obj?.[n]).find(v => v !== undefined);
+  // Add/rename keys here if your files use different turnout names
+  const getTurnout = p => asNum(pickField(p, ['turnout', 'turnout_pct', 'turnout_p', 'Turnout']));
+
   // COMPACT info templates
   function tplYesNoCompact(p) {
-    const yes = Number(p?.yes_perc);
-    const yesTxt = fmtPct(yes);
-    const noTxt = Number.isFinite(yes) ? fmtPct(100 - yes) : 'N/A';
-    const turnout = p?.turnout ? ` • Turnout: ${fmtPct(p.turnout)}` : '';
+    const yes = asNum(p?.yes_perc);
+    const no  = (yes != null) ? (100 - yes) : null;
+    const t   = getTurnout(p);
+
     return `
         <div><strong>Precinct ${key(p?.precinct) || 'N/A'}</strong></div>
-        <div>Yes: ${yesTxt} • No: ${noTxt}${turnout}</div>
+        <div>
+          Yes: ${yes != null ? fmtPct(yes) : 'N/A'} •
+          No: ${no != null ? fmtPct(no) : 'N/A'} •
+          Turnout: ${t != null ? fmtPct(t) : 'N/A'}
+        </div>
       `;
   }
   function tplD4Compact(p) {
-    const eng = fmtPct(p?.['joel_engardio_p']);
-    const mar = fmtPct(p?.['gordon_mar_p']);
+    const eng = asNum(p?.['joel_engardio_p']);
+    const mar = asNum(p?.['gordon_mar_p']);
+    const t   = getTurnout(p);
+
     return `
         <div><strong>Precinct ${key(p?.precinct) || 'N/A'}</strong></div>
-        <div>Engardio: ${eng} • Mar: ${mar}</div>
+        <div>
+          Engardio: ${eng != null ? fmtPct(eng) : 'N/A'} •
+          Mar: ${mar != null ? fmtPct(mar) : 'N/A'} •
+          Turnout: ${t != null ? fmtPct(t) : 'N/A'}
+        </div>
       `;
   }
 
