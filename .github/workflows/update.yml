@@ -1,9 +1,9 @@
 name: Update Charts
 
 on:
-  schedule:
-    # Runs daily at 6:15 p.m. PDT → 01:15 UTC
-    - cron: "15 1 * * *"
+  # schedule:
+  #   # Runs daily at 6:15 p.m. PDT → 01:15 UTC
+  #   - cron: "15 1 * * *"
   workflow_dispatch:
 
 jobs:
